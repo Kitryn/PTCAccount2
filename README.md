@@ -42,3 +42,18 @@ Account successfully created.
 
 Extra options:
 * `--compact`: Compact the output to "username:password"
+
+**As package:**
+
+import the _ptcaccount2_ package to create new accounts in your own scripts:
+
+```python
+>>> import ptcaccount2
+>>> ptcaccount2.random_account()
+{"username": "BcZvTnlTMwHsa6v", "password": "WgZApVU5edTBMCs", "email": "ZApVgwHsa6sv@5aDsy.com"}
+```
+
+**Specifying your own data:**
+```python
+>>> ptcaccount2.random_account(username=<your data>, password=<your data>, email=<your data>)
+```
