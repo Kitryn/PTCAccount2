@@ -12,6 +12,7 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import StaleElementReferenceException
 
 from ptcaccount2.ptcexceptions import *
 
@@ -119,7 +120,10 @@ def create_account(username, password, email):
     print("Captcha successful. Sleeping for 1 second...")
     time.sleep(1)
 
-    user.submit()
+    try:
+        user.submit()
+    except StaleElementReferenceException:
+        print("Error StaleElementReferenceException!")
 
     try:
         _validate_response(driver)
