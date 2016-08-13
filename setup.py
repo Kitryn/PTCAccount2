@@ -29,7 +29,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'ptc = ptcaccount2.console:entry',
+            'ptc2 = ptcaccount2.console:entry',
         ],
     }
 )
