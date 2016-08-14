@@ -1,1 +1,1 @@
-from ptcaccount2.accounts import create_account, random_account
+from ptcaccount2.accounts import random_account

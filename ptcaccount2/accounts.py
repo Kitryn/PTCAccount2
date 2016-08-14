@@ -7,6 +7,7 @@ Repo: https://github.com/Kitryn/PTCAccount2
 import time
 import string
 import random
+import datetime
 
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
@@ -41,6 +42,48 @@ def _random_email(local_length=10, sub_domain_length=5, top_domain=".com"):
     )
 
 
+def _random_birthday():
+    """
+    Creates a birthday between 1950 and 1990
+    :return: string
+    """
+    start = datetime.datetime(1950, 1, 1)
+    end = datetime.datetime(1990, 12, 31)
+
+    diff = end - start
+
+    random_duration = random.randint(0, diff.total_seconds())
+
+    birthday = start + datetime.timedelta(seconds=random_duration)
+
+    return "{year}-{month:0>2}-{day:0>2}".format(year=birthday.year, month=birthday.month, day=birthday.day)
+
+
+def _validate_birthday(birthday):
+    # raises PTCInvalidBirthdayException if invalid
+    # split by -
+    # has to be at least 2002 and after 1910
+    # char length 10
+    try:
+        assert len(birthday) == 10
+
+        # Ensure birthday is delimited by -
+        # Ensure birthday is zero-padded
+        year, month, day = birthday.split("-")
+        assert year is not None and month is not None and day is not None
+        assert len(year) == 4 and year.isdigit()
+        assert len(month) == 2 and month.isdigit()
+        assert len(day) == 2 and day.isdigit()
+
+        # Check year is between 1910 and 2002, and also that it's a valid date
+        assert datetime.datetime(year=1910, month=1, day=1) <= datetime.datetime(year=int(year), month=int(month), day=int(day)) <= datetime.datetime(year=2002, month=12, day=31)
+
+    except (AssertionError, ValueError):
+        raise PTCInvalidBirthdayException("Invalid birthday!")
+    else:
+        return True
+
+
 def _validate_password(password):
     # Check that password length is between 6 and 15 characters long
     if len(password) < 6 or len(password) > 15:
@@ -48,7 +91,7 @@ def _validate_password(password):
     return True
 
 
-def create_account(username, password, email):
+def create_account(username, password, email, birthday):
     """
     As per PTCAccount by jepayne1138, this function raises:
       PTCInvalidNameException: If the given username is already in use.
@@ -69,19 +112,20 @@ def create_account(username, password, email):
     if password is not None:
         _validate_password(password)
 
-    print("Attempting to create user {}. Opening browser...".format(username))
+    print("Attempting to create user {user}:{pw}. Opening browser...".format(user=username, pw=password))
     driver = webdriver.Chrome()
     driver.set_window_size(600, 600)
 
     # Input age: 1992-01-08
-    print("Step 1: Verifying age")
+    print("Step 1: Verifying age using birthday: {}".format(birthday))
     driver.get("{}/sign-up/".format(BASE_URL))
     assert driver.current_url == "{}/sign-up/".format(BASE_URL)
     elem = driver.find_element_by_name("dob")
     driver.execute_script("arguments[0].removeAttribute('readonly')", elem)
     elem.clear()
-    elem.send_keys("1992-01-08")
+    elem.send_keys(birthday)
     elem.submit()
+    # Todo: ensure valid birthday
 
     # Create account page
     print("Step 2: Entering account details")
@@ -151,15 +195,19 @@ def _validate_response(driver):
         raise PTCException("Generic failure. User was not created.")
 
 
-def random_account(username=None, password=None, email=None):
+def random_account(username=None, password=None, email=None, birthday=None):
     try_username = _random_string() if username is None else str(username)
     password = _random_string() if password is None else str(password)
     try_email = _random_email() if email is None else str(email)
+    try_birthday = _random_birthday() if birthday is None else str(birthday)
+
+    if birthday is not None:
+        _validate_birthday(try_birthday)
 
     account_created = False
     while not account_created:
         try:
-            account_created = create_account(try_username, password, try_email)
+            account_created = create_account(try_username, password, try_email, try_birthday)
         except PTCInvalidNameException:
             if username is None:
                 try_username = _random_string()

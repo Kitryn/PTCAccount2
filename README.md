@@ -18,7 +18,7 @@ Once ChromeDriver is installed, install PTCAccount2 from Github using pip:
 
 ### Command line interface:
 
-After installing the package run 'ptc2' from the terminal to create a new account. Optional parameters include --username, --password, and --email. Use --help for command line interface help.
+After installing the package run 'ptc2' from the terminal to create a new account. Optional parameters include --username, --password, and --email. Use --help for more commands and command line interface help.
 
 Example 1 (Create entirely random new account):
 
@@ -41,7 +41,10 @@ Account successfully created.
 ```
 
 Extra options:
+
+* `--birthday`: Specify a birthday. Must be between 1910 and 2002. Must be in YYYY-MM-DD format.
 * `--compact`: Compact the output to "username:password"
+
 
 **As package:**
 
@@ -55,5 +58,7 @@ import the _ptcaccount2_ package to create new accounts in your own scripts:
 
 **Specifying your own data:**
 ```python
->>> ptcaccount2.random_account(username=<your data>, password=<your data>, email=<your data>)
+>>> ptcaccount2.random_account(username=<your data>, password=<your data>, email=<your data>, birthday=<your data>)
 ```
+
+Note: `birthday` must be a string in YYYY-MM-DD format.

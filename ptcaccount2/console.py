@@ -28,6 +28,10 @@ def parse_arguments(args):
         help='Email for the new account (defaults to random email-like string).'
     )
     parser.add_argument(
+        '-b', '--birthday', type=str, default=None,
+        help='Birthday for the new account. Must be YYYY-MM-DD. (defaults to a random birthday).'
+    )
+    parser.add_argument(
         '--compact', action='store_true',
         help='Compact the output to "username:password"'
     )
@@ -40,7 +44,7 @@ def entry():
     args = parse_arguments(sys.argv[1:])
     try:
         print("Creating new account:")
-        account_info = ptcaccount2.random_account(args.username, args.password, args.email)
+        account_info = ptcaccount2.random_account(args.username, args.password, args.email, args.birthday)
 
         if args.compact:
             print('{}:{}'.format(account_info["username"], account_info["password"]))
