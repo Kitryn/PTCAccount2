@@ -62,3 +62,11 @@ import the _ptcaccount2_ package to create new accounts in your own scripts:
 ```
 
 Note: `birthday` must be a string in YYYY-MM-DD format.
+
+## Troubleshooting
+
+### OSX installation
+
+Some OSX users may run into an issue which points to an error occurring in line: `create_account driver = webdriver.Chrome()` This may be related to `brew install chromedriver` installing a 32bit version rather than 64bit version.
+
+To fix, see [this issue](https://github.com/Kitryn/PTCAccount2/issues/1) to make brew install the 64bit version of ChromeDriver.
