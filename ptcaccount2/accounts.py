@@ -169,7 +169,7 @@ def create_account(username, password, email, birthday):
         WebDriverWait(driver, waitTimeInSec).until(EC.text_to_be_present_in_element_value((By.ID, "g-recaptcha-response"), ""))
     except TimeoutException:
         driver.quit()
-        print("captcha was not entered within %s seconds." % waitTimeInSec)
+        print("Captcha was not entered within %s seconds." % waitTimeInSec)
         return False
         
     print("Captcha successful. Sleeping for 1 second...")
