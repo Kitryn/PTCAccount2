@@ -1,7 +1,7 @@
 from setuptools import setup
 
 DIST_NAME = 'PTCAccount2'
-VERSION = 'v2.0.2'
+VERSION = 'v2.0.3'
 AUTHOR = 'Kitryn'
 EMAIL = 'snowfennard@gmail.com'
 GITHUB_USER = 'Kitryn'

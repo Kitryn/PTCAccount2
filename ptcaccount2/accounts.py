@@ -121,8 +121,11 @@ def create_account(username, password, email, birthday):
     driver.get("{}/sign-up/".format(BASE_URL))
     assert driver.current_url == "{}/sign-up/".format(BASE_URL)
     elem = driver.find_element_by_name("dob")
-    driver.execute_script("arguments[0].removeAttribute('readonly')", elem)
-    elem.clear()
+
+    # Workaround for different region not having the same input type
+    driver.execute_script("var input = document.createElement('input'); input.type='text'; input.setAttribute('name', 'dob'); arguments[0].parentNode.replaceChild(input, arguments[0])", elem)
+
+    elem = driver.find_element_by_name("dob")
     elem.send_keys(birthday)
     elem.submit()
     # Todo: ensure valid birthday

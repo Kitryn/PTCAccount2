@@ -14,6 +14,8 @@ Once ChromeDriver is installed, install PTCAccount2 from Github using pip:
 
 `pip install git+https://github.com/Kitryn/PTCAccount2.git`
 
+NOTE: Google Chrome (the browser) must be installed for this script to work!
+
 ## Use
 
 ### Command line interface:
