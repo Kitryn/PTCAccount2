@@ -45,6 +45,7 @@ Account successfully created.
 Extra options:
 
 * `--compact`: Compact the output to "username:password"
+* `--multiple`: Specify number of accounts to make.
 * `--tofile` : Append newly created username and password into file "accounts.txt" with format "username:password".
 * `--birthday`: Specify a birthday. Must be between 1910 and 2002. Must be in YYYY-MM-DD format.
 

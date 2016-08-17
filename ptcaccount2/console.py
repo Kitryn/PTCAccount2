@@ -29,7 +29,7 @@ def parse_arguments(args):
     )
     parser.add_argument(
         '-b', '--birthday', type=str, default=None,
-        help='Birthday for the account. (default is a random birthday).'
+        help='Birthday for the account. Must be YYYY-MM-DD. (default is a random birthday).'
     )
     parser.add_argument(
         '-m', '--multiple', type=int, default=1,
