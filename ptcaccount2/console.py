@@ -35,6 +35,10 @@ def parse_arguments(args):
         '--compact', action='store_true',
         help='Compact the output to "username:password"'
     )
+    parser.add_argument(
+        '--tofile', action='store_true',
+        help='Output "username:password" into file "accounts.txt"'
+    )
 
     return parser.parse_args(args)
 
@@ -53,6 +57,10 @@ def entry():
             print('  Password:  {}'.format(account_info["password"]))
             print('  Email   :  {}'.format(account_info["email"]))
             print('\n')
+        if args.tofile:
+            with open("accounts.txt",'a+') as writeto:
+                writeto.write('{}:{}'.format(account_info["username"], account_info["password"]) + "\n")
+            print "Appended to file accounts.txt"
 
     # Handle account creation failure exceptions
     except PTCInvalidPasswordException as err:
