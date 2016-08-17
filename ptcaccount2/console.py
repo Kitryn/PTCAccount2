@@ -80,7 +80,7 @@ def entry():
             if args.tofile:
                 with open("accounts.txt", 'a+') as writeto:
                     writeto.write('{}:{}'.format(account_info["username"], account_info["password"]) + "\n")
-                print "Appended to file accounts.txt"
+                print("Appended to file accounts.txt")
             account_summary.append({"username": account_info["username"], "password": account_info["password"]})
 
     # Handle account creation failure exceptions
