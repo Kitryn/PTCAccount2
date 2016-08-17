@@ -164,13 +164,13 @@ def create_account(username, password, email, birthday):
     driver.execute_script("arguments[0].scrollIntoView(true);", elem)
 
     # Waits for you to input captcha
-    waitTimeInSec = 60
+    wait_time_in_sec = 600
     try:
-        WebDriverWait(driver, waitTimeInSec).until(EC.text_to_be_present_in_element_value((By.ID, "g-recaptcha-response"), ""))
+        WebDriverWait(driver, wait_time_in_sec).until(EC.text_to_be_present_in_element_value((By.ID, "g-recaptcha-response"), ""))
     except TimeoutException:
         driver.quit()
-        print("Captcha was not entered within %s seconds." % waitTimeInSec)
-        return False
+        print("Captcha was not entered within %s seconds." % wait_time_in_sec)
+        return False  # NOTE: THIS CAUSES create_account TO RUN AGAIN WITH THE EXACT SAME PARAMETERS
         
     print("Captcha successful. Sleeping for 1 second...")
     time.sleep(1)
