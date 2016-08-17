@@ -29,7 +29,11 @@ def parse_arguments(args):
     )
     parser.add_argument(
         '-b', '--birthday', type=str, default=None,
-        help='Birthday for the new account. Must be YYYY-MM-DD. (defaults to a random birthday).'
+        help='Birthday for the account. Must be YYYY-MM-DD. (default is a random birthday).'
+    )
+    parser.add_argument(
+        '-m', '--multiple', type=int, default=1,
+        help='Specify a number of accounts to create (default 1). If >1 AND `--email` is specified, the `--email-tag` option will be automatically set.'
     )
     parser.add_argument(
         '--compact', action='store_true',
@@ -39,28 +43,45 @@ def parse_arguments(args):
         '--tofile', action='store_true',
         help='Output "username:password" into file "accounts.txt"'
     )
-
+    parser.add_argument(
+        '--email-tag', action='store_true',
+        help='Add the username as a tag to the email (i.e addr+tag@mail.com).'
+    )  # Note: Email max length is 75 characters.
     return parser.parse_args(args)
 
 
 def entry():
     """Main entry point for the package console commands"""
     args = parse_arguments(sys.argv[1:])
+    account_summary = []
     try:
-        print("Creating new account:")
-        account_info = ptcaccount2.random_account(args.username, args.password, args.email, args.birthday)
+        if args.multiple > 1 and args.username is not None:
+            raise ValueError("Username cannot be set if --multiple is greater than 1!")
+        if len(args.email) > 75:
+            raise ValueError("Email cannot be longer than 75 characters!")
 
-        if args.compact:
-            print('{}:{}'.format(account_info["username"], account_info["password"]))
-        else:
-            print('  Username:  {}'.format(account_info["username"]))
-            print('  Password:  {}'.format(account_info["password"]))
-            print('  Email   :  {}'.format(account_info["email"]))
-            print('\n')
-        if args.tofile:
-            with open("accounts.txt",'a+') as writeto:
-                writeto.write('{}:{}'.format(account_info["username"], account_info["password"]) + "\n")
-            print "Appended to file accounts.txt"
+        if args.multiple > 1 and args.email is not None:
+            # If email is set when more than one account is set to be created, email-tag must be True
+            args.email_tag = True
+
+        print('Creating new account(s):')
+
+        for _ in range(args.multiple):
+            # Create the random account
+            account_info = ptcaccount2.random_account(
+                args.username, args.password, args.email, args.birthday, args.email_tag)
+            if args.compact:
+                print('{}:{}'.format(account_info["username"], account_info["password"]))
+            else:
+                print('  Username:  {}'.format(account_info["username"]))
+                print('  Password:  {}'.format(account_info["password"]))
+                print('  Email   :  {}'.format(account_info["email"]))
+                print('\n')
+            if args.tofile:
+                with open("accounts.txt", 'a+') as writeto:
+                    writeto.write('{}:{}'.format(account_info["username"], account_info["password"]) + "\n")
+                print "Appended to file accounts.txt"
+            account_summary.append({"username": account_info["username"], "password": account_info["password"]})
 
     # Handle account creation failure exceptions
     except PTCInvalidPasswordException as err:
@@ -69,3 +90,8 @@ def entry():
         print('Failed to create account! {}'.format(err))
     except PTCException as err:
         print('Failed to create account! General error:  {}'.format(err))
+    finally:
+        if args.multiple > 1:
+            print("Summary of accounts created:")
+            for account in account_summary:
+                print("{}:{}".format(account["username"], account["password"]))

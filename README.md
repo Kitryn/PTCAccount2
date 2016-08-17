@@ -42,12 +42,28 @@ Account successfully created.
   Email   :  shin@ramyun.com
 ```
 
+Example 3 (Create multiple accounts with a Gmail account for verification):
+```
+> ptc2 --email=len@gmail.com --multiple=2 --tofile
+Creating new account(s):
+...
+...
+...
+Appended to file accounts.txt
+Summary of accounts created:
+3Dt9louj4X1cgA8:8NiCxnMKw6SC0UF
+jTd5IrV5kDkzG9l:zyoqLOCoATdLImO
+```
+
 Extra options:
 
+* `--multiple=MULTIPLE`: Specify number of accounts to make. `--username` cannot be set while `--multiple` is greater than 1.
+* `--birthday=BIRTHDAY`: Specify a birthday. Must be between 1910 and 2002. Must be in YYYY-MM-DD format.
 * `--compact`: Compact the output to "username:password"
 * `--tofile` : Append newly created username and password into file "accounts.txt" with format "username:password".
-* `--birthday`: Specify a birthday. Must be between 1910 and 2002. Must be in YYYY-MM-DD format.
+* `--email-tag`: If set, adds the username as a tag to the email (i.e addr+tag@mail.com). Automatically set if --multiple is >1, AND an email is provided.
 
+Note: email tags may not work with all service providers. Only tested with Gmail.
 
 **As package:**
 
@@ -61,7 +77,7 @@ import the _ptcaccount2_ package to create new accounts in your own scripts:
 
 **Specifying your own data:**
 ```python
->>> ptcaccount2.random_account(username=<your data>, password=<your data>, email=<your data>, birthday=<your data>)
+>>> ptcaccount2.random_account(username=<your data>, password=<your data>, email=<your data>, birthday=<your data>, email_tag=<True/False>)
 ```
 
 Note: `birthday` must be a string in YYYY-MM-DD format.
