@@ -29,7 +29,11 @@ def parse_arguments(args):
     )
     parser.add_argument(
         '-b', '--birthday', type=str, default=None,
-        help='Birthday for the new account. Must be YYYY-MM-DD. (defaults to a random birthday).'
+        help='Birthday for the account. (default is a random birthday).'
+    )
+    parser.add_argument(
+        '-m', '--multiple', type=int, default=1,
+        help='Create multiple accounts at once (defaults to 1)'
     )
     parser.add_argument(
         '--compact', action='store_true',
@@ -47,20 +51,22 @@ def entry():
     """Main entry point for the package console commands"""
     args = parse_arguments(sys.argv[1:])
     try:
-        print("Creating new account:")
-        account_info = ptcaccount2.random_account(args.username, args.password, args.email, args.birthday)
-
-        if args.compact:
-            print('{}:{}'.format(account_info["username"], account_info["password"]))
-        else:
-            print('  Username:  {}'.format(account_info["username"]))
-            print('  Password:  {}'.format(account_info["password"]))
-            print('  Email   :  {}'.format(account_info["email"]))
-            print('\n')
-        if args.tofile:
-            with open("accounts.txt",'a+') as writeto:
-                writeto.write('{}:{}'.format(account_info["username"], account_info["password"]) + "\n")
-            print "Appended to file accounts.txt"
+        print('Creating new account(s):')
+        for _ in range(args.multiple):
+            # Create the random account
+            account_info = ptcaccount2.random_account(
+                args.username, args.password, args.email, args.birthday)
+            if args.compact:
+                print('{}:{}'.format(account_info["username"], account_info["password"]))
+            else:
+                print('  Username:  {}'.format(account_info["username"]))
+                print('  Password:  {}'.format(account_info["password"]))
+                print('  Email   :  {}'.format(account_info["email"]))
+                print('\n')
+            if args.tofile:
+                with open("accounts.txt", 'a+') as writeto:
+                    writeto.write('{}:{}'.format(account_info["username"], account_info["password"]) + "\n")
+                print "Appended to file accounts.txt"
 
     # Handle account creation failure exceptions
     except PTCInvalidPasswordException as err:
