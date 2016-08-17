@@ -45,10 +45,12 @@ Account successfully created.
 Extra options:
 
 * `--compact`: Compact the output to "username:password"
-* `--multiple`: Specify number of accounts to make.
+* `--multiple`: Specify number of accounts to make. `--username` cannot be set while `--multiple` is greater than 1.
 * `--tofile` : Append newly created username and password into file "accounts.txt" with format "username:password".
+* `--email-tag`: If set, adds the username as a tag to the email (i.e addr+tag@mail.com). Automatically set if --multiple is >1, AND an email is provided.
 * `--birthday`: Specify a birthday. Must be between 1910 and 2002. Must be in YYYY-MM-DD format.
 
+Note: email tags may not work with all service providers. Only tested with GMail.
 
 **As package:**
 
