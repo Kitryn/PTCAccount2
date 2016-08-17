@@ -1,3 +1,6 @@
+# Package specific file
+accounts.txt
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
