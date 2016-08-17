@@ -230,10 +230,12 @@ def random_account(username=None, password=None, email=None, birthday=None, emai
     while not account_created:
         # Add tag in loop so that it updates if email or username changes
         if email_tag:
-            try_email = tag_email(try_email, try_username)
+            use_email = tag_email(try_email, try_username)
+        else:  # Prevents adding tags to already tagged email
+            use_email = try_email
 
         try:
-            account_created = create_account(try_username, password, try_email, try_birthday)
+            account_created = create_account(try_username, password, use_email, try_birthday)
         except PTCInvalidNameException:
             if username is None:
                 try_username = _random_string()
