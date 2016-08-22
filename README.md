@@ -77,10 +77,27 @@ import the _ptcaccount2_ package to create new accounts in your own scripts:
 
 **Specifying your own data:**
 ```python
->>> ptcaccount2.random_account(username=<your data>, password=<your data>, email=<your data>, birthday=<your data>, email_tag=<True/False>)
+>>> ptcaccount2.random_account(
+            username=<your data>,
+            password=<your data>,
+            email=<your data>,
+            birthday=<your data>,
+            email_tag=<True/False>,
+            captcha_handler=_default_captcha_handler):
+        ...
+        ...
+        ...
 ```
 
 Note: `birthday` must be a string in YYYY-MM-DD format.
+
+`captcha_handler` is a function that allows you to specify your own custom handler. It is called when the script reaches the CAPTCHA portion of the webpage.
+
+The behaviour of _default_captcha_handler is to simply wait for the user the handle the CAPTCHA input. Users can replace this with their own function that, for example, calls an external API to solve the CAPTCHA for them.
+
+`captcha_handler` takes a single argument: the Selenium WebDriver. It should also return a boolean, indicating whether the CAPTCHA was a success, or a failure (e.g. timeout).
+
+
 
 ## Troubleshooting
 
