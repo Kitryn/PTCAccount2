@@ -212,6 +212,7 @@ def random_account(username=None, password=None, email=None, birthday=None, emai
     password = _random_string() if password is None else str(password)
     try_email = _random_email() if email is None else str(email)
     try_birthday = _random_birthday() if birthday is None else str(birthday)
+    use_email = None
 
     # Max char length of email is 75
     try:
