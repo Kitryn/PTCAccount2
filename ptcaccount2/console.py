@@ -40,13 +40,20 @@ def parse_arguments(args):
         help='Compact the output to "username:password"'
     )
     parser.add_argument(
-        '--tofile', action='store_true',
-        help='Output "username:password" into file "accounts.txt"'
-    )
-    parser.add_argument(
         '--email-tag', action='store_true',
         help='Add the username as a tag to the email (i.e addr+tag@mail.com).'
     )  # Note: Email max length is 75 characters.
+
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument(
+        '--tofile', action='store_true',
+        help='Output "username:password" into file "accounts.txt". [Deprecated: Use "--output accounts.txt" instead.]'
+    )
+    group.add_argument(
+        '-o', '--output', metavar='FILE',
+        help='Output "username:password" to a file.'
+    )
+
     return parser.parse_args(args)
 
 
@@ -77,10 +84,18 @@ def entry():
                 print('  Password:  {}'.format(account_info["password"]))
                 print('  Email   :  {}'.format(account_info["email"]))
                 print('\n')
+
             if args.tofile:
-                with open("accounts.txt", 'a+') as writeto:
+                output = 'accounts.txt'
+            elif args.output:
+                output = args.output
+            else:
+                output = None
+
+            if output is not None:
+                with open(output, 'a+') as writeto:
                     writeto.write('{}:{}'.format(account_info["username"], account_info["password"]) + "\n")
-                print("Appended to file accounts.txt")
+                print('Appended to file {}'.format(output))
             account_summary.append({"username": account_info["username"], "password": account_info["password"]})
 
     # Handle account creation failure exceptions
