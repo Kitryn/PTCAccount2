@@ -93,7 +93,27 @@ def _validate_password(password):
     return True
 
 
-def create_account(username, password, email, birthday):
+def _default_captcha_handler(driver):
+    print("[Captcha Handler] Please enter the captcha in the browser window...")
+    elem = driver.find_element_by_class_name("g-recaptcha")
+    driver.execute_script("arguments[0].scrollIntoView(true);", elem)
+
+    # Waits for you to input captcha
+    wait_time_in_sec = 600
+    try:
+        WebDriverWait(driver, wait_time_in_sec).until(
+            EC.text_to_be_present_in_element_value((By.ID, "g-recaptcha-response"), ""))
+    except TimeoutException:
+        driver.quit()
+        print("Captcha was not entered within %s seconds." % wait_time_in_sec)
+        return False  # NOTE: THIS CAUSES create_account TO RUN AGAIN WITH THE EXACT SAME PARAMETERS
+
+    print("Captcha successful. Sleeping for 1 second...")
+    time.sleep(1)  # Workaround for captcha detecting instant submission? Unverified
+    return True
+
+
+def create_account(username, password, email, birthday, captcha_handler):
     """
     As per PTCAccount by jepayne1138, this function raises:
       PTCInvalidNameException: If the given username is already in use.
@@ -109,7 +129,7 @@ def create_account(username, password, email, birthday):
         bug report on continues failure if creation works in browser.)
       AssertionError: If something a URL is not as expected
 
-    This function returns true if account was created. Raises exceptions rather than returning false.
+    This function returns true if account was created.
     """
     if password is not None:
         _validate_password(password)
@@ -160,25 +180,14 @@ def create_account(username, password, email, birthday):
     driver.find_element_by_name("terms").click()
 
     # Now to handle captcha
-    print("Waiting; Please enter the captcha in the browser window...")
-    elem = driver.find_element_by_class_name("g-recaptcha")
-    driver.execute_script("arguments[0].scrollIntoView(true);", elem)
-
-    # Waits for you to input captcha
-    wait_time_in_sec = 600
-    try:
-        WebDriverWait(driver, wait_time_in_sec).until(EC.text_to_be_present_in_element_value((By.ID, "g-recaptcha-response"), ""))
-    except TimeoutException:
-        driver.quit()
-        print("Captcha was not entered within %s seconds." % wait_time_in_sec)
+    success = captcha_handler(driver)
+    if not success:
         return False  # NOTE: THIS CAUSES create_account TO RUN AGAIN WITH THE EXACT SAME PARAMETERS
-        
-    print("Captcha successful. Sleeping for 1 second...")
-    time.sleep(1)
 
+    # Submit the form
     try:
         user.submit()
-    except StaleElementReferenceException:
+    except StaleElementReferenceException:  # User probably already pressed submit
         print("Error StaleElementReferenceException!")
 
     try:
@@ -207,7 +216,7 @@ def _validate_response(driver):
         raise PTCException("Generic failure. User was not created.")
 
 
-def random_account(username=None, password=None, email=None, birthday=None, email_tag=False):
+def random_account(username=None, password=None, email=None, birthday=None, email_tag=False, captcha_handler=_default_captcha_handler):
     try_username = _random_string() if username is None else str(username)
     password = _random_string() if password is None else str(password)
     try_email = _random_email() if email is None else str(email)
@@ -236,7 +245,7 @@ def random_account(username=None, password=None, email=None, birthday=None, emai
             use_email = try_email
 
         try:
-            account_created = create_account(try_username, password, use_email, try_birthday)
+            account_created = create_account(try_username, password, use_email, try_birthday, captcha_handler)
         except PTCInvalidNameException:
             if username is None:
                 try_username = _random_string()
